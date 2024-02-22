@@ -1,0 +1,44 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, confusion_matrix
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Importing the dataset
+dataset = pd.read_csv("/content/IRIS - IRIS.csv")
+
+# Assuming your dataset has features in columns 1-4 and the target variable in the last column
+X = dataset.iloc[:, :-1].values
+y = dataset.iloc[:, -1].values
+
+# Splitting the dataset into the Training set and Test set
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Feature Scaling
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Training the SVM model on the Training set
+svm_classifier = SVC(kernel='linear', random_state=42)
+svm_classifier.fit(X_train_scaled, y_train)
+
+# Predicting the Test set results
+y_pred_svm = svm_classifier.predict(X_test_scaled)
+
+# Evaluating the performance of the model using confusion matrix and accuracy
+accuracy_svm = accuracy_score(y_test, y_pred_svm)
+print("SVM Accuracy:", accuracy_svm)
+
+conf_matrix_svm = confusion_matrix(y_test, y_pred_svm)
+print("Confusion Matrix for SVM:")
+print(conf_matrix_svm)
+
+# Visualize the confusion matrix for SVM
+sns.heatmap(conf_matrix_svm, annot=True, fmt='d', cmap='Blues', xticklabels=dataset['species'].unique(), yticklabels=dataset['species'].unique())
+plt.xlabel("Predicted Label")
+plt.ylabel("True Label")
+plt.title("Confusion Matrix for SVM")
+plt.show()
