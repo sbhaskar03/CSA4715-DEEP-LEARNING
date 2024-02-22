@@ -1,0 +1,70 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Generate modified random data with a quadratic relationship
+np.random.seed(42)
+X = 2 * np.random.rand(100, 1)
+y = 4 + 3 * X + 1.5 * X**2 + np.random.randn(100, 1)
+
+# Function to calculate the mean squared error (loss)
+def calculate_loss(X, y, theta):
+    m = len(y)
+    predictions = X.dot(theta)
+    loss = (1 / (2 * m)) * np.sum((predictions - y)**2)
+    return loss
+
+# Gradient Descent Function
+def gradient_descent(X, y, theta, learning_rate, iterations, stopping_threshold):
+    m = len(y)
+    loss_history = []
+
+    for i in range(iterations):
+        predictions = X.dot(theta)
+        errors = predictions - y
+        gradient = (1 / m) * X.T.dot(errors)
+        theta = theta - learning_rate * gradient
+
+        # Calculate and store the loss
+        current_loss = calculate_loss(X, y, theta)
+        loss_history.append(current_loss)
+
+        # Check for convergence
+        if i > 0 and (loss_history[i - 1] - current_loss) < stopping_threshold:
+            break
+
+    return theta, loss_history
+
+# Add bias term and quadratic feature to X
+X_b = np.c_[np.ones((100, 1)), X, X**2]
+
+# Initial random values for weights
+theta_initial = np.random.randn(3, 1)
+
+# Set hyperparameters
+learning_rate = 0.01
+iterations = 1000
+stopping_threshold = 1e-6
+
+# Perform gradient descent
+theta_optimal, loss_history = gradient_descent(X_b, y, theta_initial, learning_rate, iterations, stopping_threshold)
+
+# Print the optimal parameters
+print("Optimal Parameters (Theta):", theta_optimal)
+
+# Plot the data and regression curve
+plt.scatter(X, y)
+x_values = np.linspace(0, 2, 100)
+X_values_b = np.c_[np.ones((100, 1)), x_values, x_values**2]
+plt.plot(x_values, X_values_b.dot(theta_optimal), color='red', label='Quadratic Regression')
+plt.xlabel('X')
+plt.ylabel('y')
+plt.legend()
+plt.title('Gradient Descent Quadratic Regression')
+plt.show()
+
+# Plot the loss over iterations
+plt.plot(range(len(loss_history)), loss_history)
+plt.xlabel('Iterations')
+plt.ylabel('Mean Squared Error (Loss)')
+plt.title('Loss over Iterations')
+plt.show()
