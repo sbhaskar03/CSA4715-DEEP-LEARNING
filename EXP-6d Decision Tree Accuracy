@@ -1,0 +1,50 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Importing the dataset
+dataset = pd.read_csv("/content/IRIS - IRIS.csv")
+
+# Assuming your dataset has features in columns 1-4 and the target variable in the last column
+X = dataset.iloc[:, :-1].values
+y = dataset.iloc[:, -1].values
+
+# Splitting the dataset into the Training set and Test set
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Feature Scaling (if needed, Decision Trees are not sensitive to feature scaling)
+# You can skip this step if your features are already on a similar scale
+
+# Training the Decision Tree model
+decision_tree_classifier = DecisionTreeClassifier(random_state=42)
+decision_tree_classifier.fit(X_train, y_train)
+
+# Display the Decision Tree (optional)
+# This step requires the `graphviz` library and `pydotplus`. Install them via: pip install graphviz pydotplus
+# Uncomment the following lines if you want to visualize the decision tree
+# from sklearn.tree import export_graphviz
+# import graphviz
+# dot_data = export_graphviz(decision_tree_classifier, out_file=None, feature_names=dataset.columns[:-1], class_names=dataset['species'].unique(), filled=True, rounded=True, special_characters=True)
+# graph = graphviz.Source(dot_data)
+# graph.render("iris_decision_tree")
+
+# Predicting the Test set results
+y_pred_dt = decision_tree_classifier.predict(X_test)
+
+# Display the results (confusion matrix and accuracy)
+accuracy_dt = accuracy_score(y_test, y_pred_dt)
+print("Decision Tree Accuracy:", accuracy_dt)
+
+conf_matrix_dt = confusion_matrix(y_test, y_pred_dt)
+print("Confusion Matrix for Decision Tree:")
+print(conf_matrix_dt)
+
+# Visualize the confusion matrix for Decision Tree
+sns.heatmap(conf_matrix_dt, annot=True, fmt='d', cmap='Blues', xticklabels=dataset['species'].unique(), yticklabels=dataset['species'].unique())
+plt.xlabel("Predicted Label")
+plt.ylabel("True Label")
+plt.title("Confusion Matrix for Decision Tree")
+plt.show()
