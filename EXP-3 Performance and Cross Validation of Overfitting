@@ -1,0 +1,12 @@
+import numpy as np
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import cross_val_score
+from sklearn.linear_model import LogisticRegression
+data = load_breast_cancer()
+X = data.data
+y = data.target
+model = LogisticRegression()
+k = 5  
+cv_scores = cross_val_score(model, X, y, cv=k, scoring='accuracy')
+print("Cross-Validation Scores:", cv_scores)
+print("Average Accuracy:", np.mean(cv_scores))
