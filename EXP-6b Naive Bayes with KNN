@@ -1,0 +1,23 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
+dataset = pd.read_csv("/content/IRIS - IRIS.csv")
+X = dataset.iloc[:, :-1].values
+y = dataset.iloc[:, -1].values
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+naive_bayes_classifier = GaussianNB()
+naive_bayes_classifier.fit(X_train, y_train)
+y_pred_nb = naive_bayes_classifier.predict(X_test)
+accuracy_nb = accuracy_score(y_test, y_pred_nb)
+print("Naive Bayes Accuracy:", accuracy_nb)
+k = 5  
+knn_classifier = KNeighborsClassifier(n_neighbors=k)
+knn_classifier.fit(X_train, y_train)
+y_pred_knn = knn_classifier.predict(X_test)
+accuracy_knn = accuracy_score(y_test, y_pred_knn)
+print("K-Nearest Neighbors (KNN) Accuracy:", accuracy_knn)
